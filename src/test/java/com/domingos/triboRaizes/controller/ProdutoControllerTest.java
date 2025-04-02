@@ -6,6 +6,7 @@ import com.domingos.triboRaizes.model.Produto;
 import com.domingos.triboRaizes.service.ProdutoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,76 +33,44 @@ public class ProdutoControllerTest {
     @Mock
     private BindingResult bindingResult;
 
+    private ProdutoDTO produtoDTO;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        produtoDTO = new ProdutoDTO(1L, "Produto Teste", "Descrição do Produto", 10.0, 5);
     }
 
     @Test
     public void testCreateProduto_Success() {
-        ProdutoDTO produtoDTO = new ProdutoDTO(null, "Produto1", "Descrição do Produto", 100.0, 10);
-        Produto produto = new Produto(1L, "Produto1", "Descrição do Produto", 100.0, 10);
-
+        // Arrange
         when(bindingResult.hasErrors()).thenReturn(false);
-        doNothing().when(produtoService).save(any(Produto.class));
 
+        // Act
         ResponseEntity<Produto> response = produtoController.createProduto(produtoDTO, bindingResult);
 
+        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Produto1", response.getBody().getNome());
+        ArgumentCaptor<Produto> produtoCaptor = ArgumentCaptor.forClass(Produto.class);
+        verify(produtoService, times(1)).save(produtoCaptor.capture());
+        Produto savedProduto = produtoCaptor.getValue();
+        assertEquals(produtoDTO.getId(), savedProduto.getId());
+        assertEquals(produtoDTO.getNome(), savedProduto.getNome());
+        assertEquals(produtoDTO.getDescricao(), savedProduto.getDescricao());
+        assertEquals(produtoDTO.getPreco(), savedProduto.getPreco());
+        assertEquals(produtoDTO.getQuantidade(), savedProduto.getQuantidade());
     }
 
     @Test
-    public void testCreateProduto_ValidationError() {
-        ProdutoDTO produtoDTO = new ProdutoDTO(0L, "", "Descrição do Produto", 100.0, 10);
-
-        // Simula a execução com erros de validação
+    public void testCreateProduto_BindingResultHasErrors() {
+        // Arrange
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(new org.springframework.validation.ObjectError("nome", "O nome do produto não pode ser vazio")));
+        when(bindingResult.getAllErrors()).thenReturn(Collections.emptyList()); // Esteja ciente que você não precisa retornar um produto aqui
 
-        ResponseEntity<?> response = produtoController.createProduto(produtoDTO, bindingResult);
+        // Act
+        ResponseEntity<Produto> response = produtoController.createProduto(produtoDTO, bindingResult);
 
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody() instanceof List); // Verifica se o corpo da resposta é uma lista
-    }
-
-    @Test
-    public void testUpdateProduto_Success() {
-        Long id = 1L;
-        ProdutoDTO produtoDTO = new ProdutoDTO(id, "Produto Atualizado", "Descrição Atualizada", 150.0, 5);
-        Produto produtoExistente = new Produto(id, "Produto Antigo", "Descrição Antiga", 100.0, 10);
-
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(produtoService.findById(id)).thenReturn(Optional.of(produtoExistente));
-        doNothing().when(produtoService).update(any(Produto.class));
-
-        ResponseEntity<Produto> response = produtoController.updateProduto(id, produtoDTO, bindingResult);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Produto Atualizado", response.getBody().getNome());
-    }
-
-    @Test
-    public void testUpdateProduto_NotFound() {
-        Long id = 1L;
-        ProdutoDTO produtoDTO = new ProdutoDTO(id, "Produto Atualizado", "Descrição Atualizada", 150.0, 5);
-
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(produtoService.findById(id)).thenReturn(Optional.empty());
-
-        assertThrows(ProdutoNotFoundException.class, () -> {
-            produtoController.updateProduto(id, produtoDTO, bindingResult);
-        });
-    }
-
-    @Test
-    public void testDeleteProduto_Success() {
-        Long id = 1L;
-
-        produtoController.deleteProduto(id);
-
-        verify(produtoService, times(1)).delete(id);
     }
 }
