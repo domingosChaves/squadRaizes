@@ -69,4 +69,74 @@ O projeto utiliza os padrões **MVC (Model-View-Controller)** e **Factory**, ond
 ### Testes
 O projeto implementa uma série de testes unitários que seguem o modelo do Test-Driven Development (TDD), assegurando que as funcionalidades atendam aos requisitos especificados e funcionem conforme o esperado.
 
+## Casos de Uso para Software de Controle de Varejo
+
+O sistema de gerenciamento de produtos foi projetado para ser utilizado em um software de controle de varejo do tipo supermercado. Abaixo estão alguns casos de uso relevantes, ilustrando como os métodos implementados podem ser aplicados em situações do dia a dia:
+
+### 1. Cadastro de Produto
+**Descrição:** O administrador cadastra um novo produto no sistema.  
+**Métodos Utilizados:** `save(Produto produto)`  
+**Validações:**  
+- Verificar se todos os campos obrigatórios (nome, preço, quantidade) estão preenchidos.
+- Garantir que o preço do produto seja um valor positivo.
+- Garantir que a quantidade em estoque seja um número não negativo.
+
+### 2. Atualização de Produto
+**Descrição:** O administrador atualiza as informações de um produto existente.  
+**Métodos Utilizados:** `update(Produto produto)`  
+**Validações:**  
+- Verificar se o produto existe no sistema antes da atualização.
+- Validar se os novos valores de preço e quantidade são válidos.
+
+### 3. Exclusão de Produto
+**Descrição:** O administrador remove um produto do sistema.  
+**Métodos Utilizados:** `delete(Long id)`  
+**Validações:**  
+- Verificar se o produto existe antes de tentar deletá-lo.
+- Garantir que o produto não esteja associado a vendas pendentes.
+
+### 4. Consulta de Produto por ID
+**Descrição:** O usuário consulta as informações de um produto específico.  
+**Métodos Utilizados:** `findById(Long id)`  
+**Validações:**  
+- Retornar uma mensagem apropriada se o produto não for encontrado.
+
+### 5. Listagem de Todos os Produtos
+**Descrição:** O usuário consulta a lista de todos os produtos disponíveis.  
+**Métodos Utilizados:** `findAll()`  
+**Validações:**  
+- Retornar uma lista vazia se não houver produtos cadastrados.
+
+### 6. Controle de Estoque
+**Descrição:** O sistema monitora a quantidade de produtos em estoque e alerta quando a quantidade estiver abaixo de um limite mínimo.  
+**Métodos Utilizados:** `findAll()`  
+**Validações:**  
+- Comparar a quantidade disponível com um valor mínimo definido para cada produto.
+- Gerar alertas ou relatórios quando o estoque estiver baixo.
+
+### 7. Registro de Venda
+**Descrição:** O operador registra a venda de um ou mais produtos.  
+**Métodos Utilizados:** `findById(Long id)`, atualização da quantidade do produto.  
+**Validações:**  
+- Verificar se o produto existe e se há estoque suficiente para a venda.
+- Atualizar a quantidade do produto após a venda.
+
+### 8. Relatório de Vendas
+**Descrição:** O administrador consulta um relatório das vendas realizadas em um determinado período.  
+**Métodos Utilizados:** Métodos auxiliares para filtrar e agregar dados de vendas.  
+**Validações:**  
+- Garantir que o período informado seja válido.
+- Retornar resultados apropriados se não houver vendas no período.
+
+### 9. Consulta de Produtos com Desconto
+**Descrição:** O administrador aplica um desconto em um ou mais produtos e consulta os produtos em promoção.  
+**Métodos Utilizados:** `update(Produto produto)` para aplicar o desconto.  
+**Validações:**  
+- Validar se o desconto é um valor válido (não negativo e menor que o preço original).
+- Retornar a lista de produtos que estão em promoção.
+
+### Observação Sobre Versatilidade
+Embora os métodos implementados sejam simples, eles podem ser utilizados de forma versátil dentro da aplicação. Essa estrutura permite uma fácil escalabilidade para níveis mais complexos, à medida que novas funcionalidades e integrações são adicionadas ao sistema. A flexibilidade do design possibilita a adaptação a diferentes necessidades de negócio, mantendo a robustez e a eficiência.
+
+### POSTMAN
 Além disso, na raiz do projeto, há uma coleção do Postman disponível, permitindo que usuários interajam com a API de forma simplificada, testando os endpoints sem complicações.
