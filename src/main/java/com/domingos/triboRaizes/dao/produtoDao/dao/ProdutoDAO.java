@@ -1,5 +1,6 @@
 package com.domingos.triboRaizes.dao.produtoDao.dao;
 
+import com.domingos.triboRaizes.dto.ProdutoDTO;
 import com.domingos.triboRaizes.model.Produto;
 import org.springframework.stereotype.Repository;
 

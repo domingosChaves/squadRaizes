@@ -1,5 +1,6 @@
 package com.domingos.triboRaizes.dao.produtoDao.impl;
 import com.domingos.triboRaizes.dao.produtoDao.dao.ProdutoDAO;
+import com.domingos.triboRaizes.dto.ProdutoDTO;
 import com.domingos.triboRaizes.model.Produto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
