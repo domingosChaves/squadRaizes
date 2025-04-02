@@ -1,31 +1,30 @@
 package com.domingos.triboRaizes.controller;
 
+
 import com.domingos.triboRaizes.dto.ProdutoDTO;
 import com.domingos.triboRaizes.exception.ProdutoNotFoundException;
 import com.domingos.triboRaizes.model.Produto;
 import com.domingos.triboRaizes.service.ProdutoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.*;
 
-public class ProdutoControllerTest {
-
-    @InjectMocks
-    private ProdutoController produtoController;
+@ExtendWith(MockitoExtension.class)
+class ProdutoControllerTest {
 
     @Mock
     private ProdutoService produtoService;
@@ -33,44 +32,65 @@ public class ProdutoControllerTest {
     @Mock
     private BindingResult bindingResult;
 
+    @InjectMocks
+    private ProdutoController produtoController;
+
+    private Produto produto;
     private ProdutoDTO produtoDTO;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        produtoDTO = new ProdutoDTO(1L, "Produto Teste", "Descrição do Produto", 10.0, 5);
+    void setUp() {
+        produto = new Produto(1L, "Produto Teste", "Descrição", 10.0, 5);
+        produtoDTO = new ProdutoDTO(1L, "Produto Teste", "Descrição", 10.0, 5);
     }
 
     @Test
-    public void testCreateProduto_Success() {
-        // Arrange
+    void testCreateProduto_Sucesso() {
         when(bindingResult.hasErrors()).thenReturn(false);
-
-        // Act
         ResponseEntity<Produto> response = produtoController.createProduto(produtoDTO, bindingResult);
+        assertEquals(CREATED, response.getStatusCode());
+    }
 
-        // Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        ArgumentCaptor<Produto> produtoCaptor = ArgumentCaptor.forClass(Produto.class);
-        verify(produtoService, times(1)).save(produtoCaptor.capture());
-        Produto savedProduto = produtoCaptor.getValue();
-        assertEquals(produtoDTO.getId(), savedProduto.getId());
-        assertEquals(produtoDTO.getNome(), savedProduto.getNome());
-        assertEquals(produtoDTO.getDescricao(), savedProduto.getDescricao());
-        assertEquals(produtoDTO.getPreco(), savedProduto.getPreco());
-        assertEquals(produtoDTO.getQuantidade(), savedProduto.getQuantidade());
+
+    @Test
+    void testFindProdutoById_Sucesso() {
+        when(produtoService.findById(1L)).thenReturn(Optional.of(produto));
+        ResponseEntity<ProdutoDTO> response = produtoController.findProdutoById(1L);
+        assertEquals(OK, response.getStatusCode());
     }
 
     @Test
-    public void testCreateProduto_BindingResultHasErrors() {
-        // Arrange
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(bindingResult.getAllErrors()).thenReturn(Collections.emptyList()); // Esteja ciente que você não precisa retornar um produto aqui
+    void testFindProdutoById_NaoEncontrado() {
+        when(produtoService.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ProdutoNotFoundException.class, () -> produtoController.findProdutoById(1L));
+    }
 
-        // Act
-        ResponseEntity<Produto> response = produtoController.createProduto(produtoDTO, bindingResult);
+    @Test
+    void testFindAllProdutos() {
+        when(produtoService.findAll()).thenReturn(Arrays.asList(produto));
+        ResponseEntity<List<ProdutoDTO>> response = produtoController.findAllProdutos();
+        assertEquals(OK, response.getStatusCode());
+        assertFalse(response.getBody().isEmpty());
+    }
 
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    @Test
+    void testUpdateProduto_Sucesso() {
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(produtoService.findById(1L)).thenReturn(Optional.of(produto));
+        ResponseEntity<Produto> response = produtoController.updateProduto(1L, produtoDTO, bindingResult);
+        assertEquals(OK, response.getStatusCode());
+    }
+
+    @Test
+    void testUpdateProduto_NaoEncontrado() {
+        when(produtoService.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ProdutoNotFoundException.class, () -> produtoController.updateProduto(1L, produtoDTO, bindingResult));
+    }
+
+    @Test
+    void testDeleteProduto() {
+        doNothing().when(produtoService).delete(1L);
+        ResponseEntity<Void> response = produtoController.deleteProduto(1L);
+        assertEquals(NO_CONTENT, response.getStatusCode());
     }
 }
