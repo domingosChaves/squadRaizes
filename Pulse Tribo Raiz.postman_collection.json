@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "21532c14-6c1b-4c34-a24d-117628b9d683",
+		"name": "Pulse Tribo Raiz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13958793"
+	},
+	"item": [
+		{
+			"name": "Alterar Produto",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"id\": 1,\r\n        \"nome\": \"Produto 1\",\r\n        \"descricao\": \"Alterando a Descrição do produto 1\",\r\n        \"preco\": 1.0,\r\n        \"quantidade\": 10\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/produtos/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"produtos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cadastrar Produto",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"id\":0,\r\n        \"nome\": \"Produto 1\",\r\n        \"descricao\": \"Cadastro a Descrição do produto 1 1 \",\r\n        \"preco\": 1.0,\r\n        \"quantidade\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/produtos",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"produtos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obter Produtos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/produtos",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"produtos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Produto",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/produtos/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"produtos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
